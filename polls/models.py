@@ -1,7 +1,15 @@
 import datetime
 
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+
+
+class AdvUser(AbstractUser):
+    avatar = models.ImageField(upload_to='media/avatars', blank=False)
+
+    class Meta(AbstractUser.Meta):
+        pass
 
 
 class Question(models.Model):

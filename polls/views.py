@@ -1,8 +1,11 @@
+from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Question, Choice
+
+from .forms import UserRegisterForm
+from .models import Question, Choice, AdvUser
 from django.template import loader
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 
@@ -37,3 +40,10 @@ def vote(request, question_id):
         selected_choice.votes += 1
         selected_choice.save()
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+
+class SignUpView(generic.CreateView):
+    template_name = 'polls/register.html'
+    success_url = reverse_lazy('login')
+    form_class = UserRegisterForm
+    success_page = "polls"
