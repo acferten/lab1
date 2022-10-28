@@ -13,6 +13,6 @@ urlpatterns = [
                   path('signup', views.SignUpView.as_view(), name='signup'),
                   path('user/<int:pk>', views.UserDetailView.as_view(), name='user-detail'),
                   path('user/<int:pk>/delete', views.UserDeleteView.as_view(), name='user-delete'),
-                  path('user/<int:pk>/update', views.UserDeleteView.as_view(), name='user-update'),
+                  path('user/<int:pk>/update', views.UserUpdateView.as_view(), name='user-update'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

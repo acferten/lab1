@@ -1,6 +1,7 @@
 {% block content %}
-<h1>Name: {{ advuser.username }}</h1>
-<img scr="{{advuser.avatar.url}}">
+    <h1>Username: {{ advuser.username }}</h1>
+    <p>Profile picture:</p>
+    <img src="{{ advuser.avatar.url }}" alt="profile picture">
 
 
 {% endblock %}

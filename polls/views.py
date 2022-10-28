@@ -53,17 +53,17 @@ class SignUpView(CreateView):
 
 class UserDetailView(LoginRequiredMixin, DetailView):
     model = AdvUser
-    template_name = 'profile.html'
+    template_name = 'polls/profile.html'
 
 
 class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = AdvUser
     success_url = 'user-detail'
-    fields = '__all__'
-    template_name = 'profile_update.html'
+    fields = ['username', 'password', 'avatar']
+    template_name = 'polls/profile_update.html'
 
 
 class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = AdvUser
     success_url = reverse_lazy('user-detail')
-    template_name = 'confirm_delete.html'
+    template_name = 'polls/confirm_delete.html'
