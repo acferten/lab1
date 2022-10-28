@@ -1,0 +1,16 @@
+{% block content %}
+
+<div class="section-seperator">
+    <div class="content-md container">
+        <div class="row margin-b-40">
+            <div class="col-sm-6">
+                <h2>Удаление заявки</h2>
+                <p>Вы действительно хотите удалить заявку: {{ order.name }}?</p>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Да, удалить."/>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

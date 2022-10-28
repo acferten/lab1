@@ -127,3 +127,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'polls.AdvUser'
 
+MEDIA_ROOT = ''
+MEDIA_URL = ''
+

@@ -1,10 +1,11 @@
-from django.contrib.auth.forms import UserCreationForm
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic import CreateView
 
 from .forms import UserRegisterForm
 from .models import Question, Choice, AdvUser
-from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
@@ -42,8 +43,27 @@ def vote(request, question_id):
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 
-class SignUpView(generic.CreateView):
+class SignUpView(CreateView):
+    model = AdvUser
     template_name = 'polls/register.html'
     success_url = reverse_lazy('login')
     form_class = UserRegisterForm
     success_page = "polls"
+
+
+class UserDetailView(LoginRequiredMixin, DetailView):
+    model = AdvUser
+    template_name = 'profile.html'
+
+
+class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = AdvUser
+    success_url = 'user-detail'
+    fields = '__all__'
+    template_name = 'profile_update.html'
+
+
+class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = AdvUser
+    success_url = reverse_lazy('user-detail')
+    template_name = 'confirm_delete.html'

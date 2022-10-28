@@ -6,10 +6,7 @@ from django.utils import timezone
 
 
 class AdvUser(AbstractUser):
-    avatar = models.ImageField(upload_to='media/avatars', blank=False)
-
-    class Meta(AbstractUser.Meta):
-        pass
+    avatar = models.ImageField(upload_to='polls/media/avatars', blank=False)
 
 
 class Question(models.Model):
