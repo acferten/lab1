@@ -65,5 +65,5 @@ class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = AdvUser
-    success_url = reverse_lazy('user-detail')
+    success_url = reverse_lazy('polls:index')
     template_name = 'polls/confirm_delete.html'
