@@ -1,4 +1,3 @@
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
@@ -38,6 +37,8 @@ def vote(request, question_id):
             'error_message': 'вы не сделали выбор'
         })
     else:
+        vote = selected_choice.user_set(user=request.user.id)
+
         selected_choice.votes += 1
         selected_choice.save()
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
@@ -58,7 +59,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
 class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = AdvUser
-    success_url = 'user-detail'
+    success_url = '/'
     fields = ['username', 'password', 'avatar']
     template_name = 'polls/profile_update.html'
 
