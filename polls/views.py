@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import CreateView
 
 from .forms import UserRegisterForm
-from .models import Question, Choice, AdvUser
+from .models import Question, Choice, AdvUser, Vote
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
@@ -37,11 +38,27 @@ def vote(request, question_id):
             'error_message': 'вы не сделали выбор'
         })
     else:
-        vote = selected_choice.user_set(user=request.user.id)
+        if Vote.objects.filter(question=question, user=request.user).exists():
+            return render(request, 'polls/detail.html', {
+                'question': question,
+                'error_message': 'вы уже приняли участие в голосовании'
+            })
+        else:
+            vote = Vote.objects.create(question=question, user=request.user)
+            selected_choice.votes += 1
+            question.question_votes +=1
+            selected_choice.save()
+            vote.save()
+            question.save()
 
-        selected_choice.votes += 1
-        selected_choice.save()
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+            percent_choices = []
+            allchoices = Choice.objects.filter(question=question).aggregate(Sum('votes'))
+
+            for choice in Choice.objects.filter(question=question):
+                percent_choices.append((choice.votes/allchoices)*100)
+
+
+            return HttpResponseRedirect(reverse('polls:results', args=(question.id, )))
 
 
 class SignUpView(CreateView):
