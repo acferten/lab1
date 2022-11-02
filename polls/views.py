@@ -44,21 +44,20 @@ def vote(request, question_id):
                 'error_message': 'вы уже приняли участие в голосовании'
             })
         else:
-            vote = Vote.objects.create(question=question, user=request.user)
+            user_voted = Vote.objects.create(question=question, user=request.user)
             selected_choice.votes += 1
-            question.question_votes +=1
-            selected_choice.save()
-            vote.save()
+            question.question_votes += 1
             question.save()
+            selected_choice.save()
+            user_voted.save()
 
-            percent_choices = []
-            allchoices = Choice.objects.filter(question=question).aggregate(Sum('votes'))
+            # percent_choices = []
+            # allchoices = Choice.objects.filter(question=question).aggregate(Sum('votes'))
+            #
+            # for choice in Choice.objects.filter(question=question):
+            #     percent_choices.append((choice.votes/allchoices)*100)
 
-            for choice in Choice.objects.filter(question=question):
-                percent_choices.append((choice.votes/allchoices)*100)
-
-
-            return HttpResponseRedirect(reverse('polls:results', args=(question.id, )))
+            return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 
 class SignUpView(CreateView):

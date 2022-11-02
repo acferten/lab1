@@ -44,6 +44,12 @@ class Vote(models.Model):
 @receiver(pre_save, sender=Choice)
 def percent_votes(sender, **kwargs):
     choice = kwargs['instance']
-    all_votes = Question.objects.get(pk=choice.question)
-    choice.percent_votes = all_votes/choice.votes
-    choice.save()
+    question = Question.objects.get(pk=choice.question.id)
+    if question.question_votes != 0:
+        for choice in Choice.objects.filter(question=question):
+            choice.percent_votes = (choice.votes / question.question_votes) * 100
+    # if question.question_votes != 0:
+    #     choice.percent_votes = (choice.votes / question.question_votes) * 100
+    else:
+        choice.percent_votes = 0
+
