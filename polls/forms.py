@@ -8,3 +8,4 @@ class UserRegisterForm(UserCreationForm):
     class Meta:
         model = AdvUser
         fields = ['username', 'password1', 'password2', 'avatar']
+

@@ -1,10 +1,11 @@
 {% extends "polls/base_generic.html" %}
 
 {% block content %}
-
     <h1>Username: {{ advuser.username }}</h1>
-
     <img style="width: 200px" src="/polls{{ advuser.avatar.url }}" alt="profile picture">
     <p>Profile picture</p>
-    <a href="./update">Update</a>
+    {% if advuser == request.user %}
+        <a href="./update">Update /</a>
+        <a href="./delete">Delete</a>
+    {% endif %}
 {% endblock %}

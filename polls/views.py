@@ -1,9 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views.generic import CreateView
-
 from .forms import UserRegisterForm
 from .models import Question, Choice, AdvUser, Vote
 from django.urls import reverse, reverse_lazy
@@ -15,7 +14,9 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        return Question.objects.order_by('-pub_date')
+        questions = (x for x in Question.objects.all().order_by('-pub_date') if x.was_published_recently())
+        return questions
+        # return Question.objects.filter(was_published_recently=True).order_by('-pub_date')
 
 
 class DetailView(generic.DetailView):
@@ -76,11 +77,23 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 class UserUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = AdvUser
     success_url = '/'
-    fields = ['username', 'password', 'avatar']
+    fields = ['username', 'avatar']
     template_name = 'polls/profile_update.html'
+
+    def get_object(self, queryset=None):
+        obj = super(UserUpdateView, self).get_object(queryset)
+        if obj != self.request.user:
+            raise PermissionDenied()
+        else:
+            return self.request.user
 
 
 class UserDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = AdvUser
     success_url = reverse_lazy('polls:index')
     template_name = 'polls/confirm_delete.html'
+
+    def get_object(self, queryset=None):
+        obj = super(UserDeleteView, self).get_object(queryset)
+        if obj != self.request.user:
+            raise PermissionDenied()

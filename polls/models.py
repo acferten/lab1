@@ -16,6 +16,11 @@ class Question(models.Model):
     pub_date = models.DateTimeField('date published')
     question_votes = models.IntegerField(default=0)
 
+    # @property
+    # def is_overdue(self):
+    #     """Determines if the book is overdue based on due date and current date."""
+    #     return bool(self.due_back and date.today() > self.due_back)
+
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 
