@@ -15,12 +15,11 @@ class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
     question_votes = models.IntegerField(default=0)
+    short_description = models.CharField(max_length=400)
+    description = models.CharField(max_length=3000)
+    image = models.ImageField(upload_to='polls/media/questions', blank=True)
 
-    # @property
-    # def is_overdue(self):
-    #     """Determines if the book is overdue based on due date and current date."""
-    #     return bool(self.due_back and date.today() > self.due_back)
-
+    @property
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 
@@ -50,11 +49,15 @@ class Vote(models.Model):
 def percent_votes(sender, **kwargs):
     choice = kwargs['instance']
     question = Question.objects.get(pk=choice.question.id)
-    if question.question_votes != 0:
-        for choice in Choice.objects.filter(question=question):
-            choice.percent_votes = (choice.votes / question.question_votes) * 100
     # if question.question_votes != 0:
+    # for choice in Choice.objects.filter(question=question):
+    #     print('~' * 100)
+    #     print(choice, ':', choice.votes , ":", question.question_votes)
+    #     print('~' * 100)
     #     choice.percent_votes = (choice.votes / question.question_votes) * 100
+
+    if question.question_votes != 0:
+        choice.percent_votes = (choice.votes / question.question_votes) * 100
+
     else:
         choice.percent_votes = 0
-

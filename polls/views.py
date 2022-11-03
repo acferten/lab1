@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.views.generic import CreateView
 from .forms import UserRegisterForm
 from .models import Question, Choice, AdvUser, Vote
@@ -14,14 +14,19 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        questions = (x for x in Question.objects.all().order_by('-pub_date') if x.was_published_recently())
-        return questions
-        # return Question.objects.filter(was_published_recently=True).order_by('-pub_date')
+        return Question.objects.order_by('-pub_date')
 
 
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
+
+    def get_object(self, queryset=None):
+        obj = super(DetailView, self).get_object(queryset)
+        if obj.was_published_recently or self.request.user.is_staff:
+            return obj, self.request.user.is_staff
+        else:
+            raise PermissionDenied()
 
 
 class ResultsView(generic.DetailView):
