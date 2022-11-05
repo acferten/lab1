@@ -14,7 +14,7 @@ class Question(models.Model):
     question_votes = models.IntegerField(default=0)
     short_description = models.CharField(max_length=400)
     description = models.CharField(max_length=3000)
-    image = models.ImageField(upload_to='polls/media/questions', blank=True)
+    image = models.ImageField(upload_to='media/questions', blank=True)
 
     @property
     def was_published_recently(self):
