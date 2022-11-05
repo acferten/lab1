@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
@@ -22,9 +23,9 @@ class DetailView(generic.DetailView):
     template_name = 'polls/detail.html'
 
     def get_object(self, queryset=None):
-        obj = super(DetailView, self).get_object(queryset)
-        if obj.was_published_recently or self.request.user.is_staff:
-            return obj, self.request.user.is_staff
+        question = super(DetailView, self).get_object(queryset)
+        if question.was_published_recently or self.request.user.is_staff:
+            return question
         else:
             raise PermissionDenied()
 
@@ -34,6 +35,7 @@ class ResultsView(generic.DetailView):
     template_name = 'polls/results.html'
 
 
+@login_required
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -50,23 +52,17 @@ def vote(request, question_id):
                 'error_message': 'вы уже приняли участие в голосовании'
             })
         else:
-            user_voted = Vote.objects.create(question=question, user=request.user)
-            selected_choice.votes += 1
             question.question_votes += 1
             question.save()
+            selected_choice.votes += 1
             selected_choice.save()
+            user_voted = Vote.objects.create(question=question, user=request.user)
             user_voted.save()
-
-            # percent_choices = []
-            # allchoices = Choice.objects.filter(question=question).aggregate(Sum('votes'))
-            #
-            # for choice in Choice.objects.filter(question=question):
-            #     percent_choices.append((choice.votes/allchoices)*100)
 
             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 
-class SignUpView(CreateView):
+class SignUpView(generic.CreateView):
     model = AdvUser
     template_name = 'polls/register.html'
     success_url = reverse_lazy('login')
@@ -74,7 +70,7 @@ class SignUpView(CreateView):
     success_page = "polls"
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
+class UserDetailView(LoginRequiredMixin, generic.DetailView):
     model = AdvUser
     template_name = 'polls/profile.html'
 

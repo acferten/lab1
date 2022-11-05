@@ -2,7 +2,9 @@
 
 {% block content %}
     <h1>Username: {{ advuser.username }}</h1>
+    {%if advuser.avatar%}
     <img style="width: 200px" src="/polls{{ advuser.avatar.url }}" alt="profile picture">
+    {%endif%}
     <p>Profile picture</p>
     {% if advuser == request.user %}
         <a href="./update">Update /</a>

@@ -1,9 +1,6 @@
 import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils import timezone
 
 
@@ -31,10 +28,13 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
-    percent_votes = models.IntegerField(default=0)
 
     def __str__(self):
         return self.choice_text
+
+    def get_percentage(self):
+        percents = self.votes * 100 / self.question.question_votes
+        return percents
 
 
 class Vote(models.Model):
@@ -43,21 +43,3 @@ class Vote(models.Model):
 
     def __str__(self):
         return self.question.question_text
-
-
-@receiver(pre_save, sender=Choice)
-def percent_votes(sender, **kwargs):
-    choice = kwargs['instance']
-    question = Question.objects.get(pk=choice.question.id)
-    # if question.question_votes != 0:
-    # for choice in Choice.objects.filter(question=question):
-    #     print('~' * 100)
-    #     print(choice, ':', choice.votes , ":", question.question_votes)
-    #     print('~' * 100)
-    #     choice.percent_votes = (choice.votes / question.question_votes) * 100
-
-    if question.question_votes != 0:
-        choice.percent_votes = (choice.votes / question.question_votes) * 100
-
-    else:
-        choice.percent_votes = 0
